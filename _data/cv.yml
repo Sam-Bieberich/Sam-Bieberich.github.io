@@ -15,7 +15,7 @@
       description:
         - 3.88 GPA
         - Minoring in Mathematics and Physics
-        - title: Activities and societies
+        - title: Activities and Societies
           contents:
             - Craig and Galen Brown Engineering Honors Program
             - Engineering Mentorship Council
@@ -32,14 +32,12 @@
       description:
         - Co-Founder of QuantA&M, Texas A&M University's first student organization devoted to connecting students with the networking tools and resources in the diverse field of Quantum Computing.
         - Organization's second president, arranging events and networking with speakers and sponsors, as well as currently coordinating the QuantA&M LinkedIn social media presence.
-        
     - title: Quantum Computing Research SULI Program Intern
       institution: Oak Ridge National Laboratory
       year: 2023-2023
       description:
         - Wrote report and designed a poster based on research into the field if Hybrid HPC-Quantum Machine Learning via PyTorch and Pennylane's Python libraries.
-
-      - title: Quantum Computing Research PCIP Program Intern
+    - title: Quantum Computing Research PCIP Program Intern
       institution: Oak Ridge National Laboratory
       year: 2022-2022
       description:
@@ -77,7 +75,7 @@
     - year: 2022
       items: 
         - Dean's Honor Roll (Texas A&M University)
-    -year: 2021
+    - year: 2021
       items: 
         - Texas A&M and Lake Travis Community Scholarship from Lake Travis A&M Association
 
