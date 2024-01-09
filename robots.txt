@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://sam-bieberich.github.io/al-folio/sitemap.xml
+Sitemap: https://sam-bieberich.github.io/sitemap.xml
