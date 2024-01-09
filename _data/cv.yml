@@ -48,15 +48,15 @@
 - title: Projects
   type: time_table
   contents:
-    - title: <a href="https://arxiv.org/abs/2310.03286">Workflows between HPC and Quantum Computers at Oak Ridge National Laboratory﻿</a>
-      year: 2022-
-      description: Performed as a member of the 2022 PCIP summer cohort at ORNL. Publication pending. 
     - title: Analyzing Machine Learning Software on Classical and Quantum Computing Resources at Oak Ridge National Laboratory
       year: 2023-
       description: Performed as a member of the 2023 SULI summer cohort at ORNL.
+    - title: <a href="https://arxiv.org/abs/2310.03286">Workflows between HPC and Quantum Computers at Oak Ridge National Laboratory﻿</a>
+      year: 2022-
+      description: Performed as a member of the 2022 PCIP summer cohort at ORNL. Publication pending. 
     - title: Differential Equations and the Origins of Chaos
       year: 2022
-      description: 13 page report detailing the basics of ODEs and their relevance in the field of Chaos Theory.
+      description: 13-page report detailing the basics of ODEs and their relevance in the field of Chaos Theory.
     - title: Analyzing and Preparing for the Inevitability of Online Learning
       year: 2021
       description: Full Technical Research Report detailing interviews and polls taken by online educators after the tumultuous 2020 and 2020 academic years, regarding possible solutions and remedial work to assist in the reintroduction of full-time learning once again, post-COVID.
@@ -69,8 +69,8 @@
   contents:
     - year: 2023
       items: 
-        - Differential Tuition Scholarship from Texas A&M ECEN Department
-        - M.J. Pickett Memorial Scholarship from Texas A&M ECEN Department
+        - Differential Tuition Scholarship (Texas A&M ECEN Department)
+        - M.J. Pickett Memorial Scholarship (Texas A&M ECEN Department)
         - Dean's Honor Award (Texas A&M University)
     - year: 2022
       items: 
