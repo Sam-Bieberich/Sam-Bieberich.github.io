@@ -1,8 +1,8 @@
 ---
 layout: post
-title: Why Minecraft is Turing Complete but a Quantum Computer can’t be
+title: Apple’s Big Brother Moment and the Most Famous Commerical in History
 date: 2024-01-04 10:14:00-0400
-description: Why Minecraft is Turing Complete but a Quantum Computer can’t be
+description: We shall prevail!
 tags: computing-history
 categories: blog-post
 giscus_comments: false
