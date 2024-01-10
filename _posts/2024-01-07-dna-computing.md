@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Leonard Adleman - Computing With DNA
-date: 2024-01-04 10:14:00-0400
+date: 2024-01-07 10:14:00-0400
 description: When electrons are hard to come by
 tags: computing-history computing
 categories: blog-post
