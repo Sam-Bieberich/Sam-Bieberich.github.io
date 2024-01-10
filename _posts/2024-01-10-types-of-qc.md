@@ -3,8 +3,8 @@ layout: post
 title: The Many Types of Quantum Hardware
 date: 2024-01-10 10:14:00-0400
 description: Quantum computers are not all created equally
-tags: quantum computing
-categories: sample-posts
+tags: quantum-computing
+categories: blog-post
 giscus_comments: false
 related_posts: false
 toc:
