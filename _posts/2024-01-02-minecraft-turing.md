@@ -34,6 +34,7 @@ Lastly, Turing machines aren't able to solve all the problems a quantum computer
 
 Given this information, it is easy to see why quantum computers are unique from the tools we use regularly. While conceivably simulatable by backends such as Excel or Minecraft, quantum computers can't do the opposite, but they can do much more in return. Of course, don't let me stop you from placing some redstone and trying regardless. 
 
+## References
 
 https://pennylane.ai/qml/demos/tutorial\_photonics\#photonic-quantum-computers
 
