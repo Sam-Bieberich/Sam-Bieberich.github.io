@@ -1,0 +1,31 @@
+---
+layout: default
+title: Samuel (Sam) Bieberich
+---
+
+<div id="home">
+  <h1>Blog Posts</h1>
+  <ul class="posts">
+    {% for post in site.posts %}
+      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <h1>Other Articles</h1>
+  <ul class="posts">
+    <li><span>27 Oct 2024</span> &raquo; <a href="https://www.quantumgrad.com/article/805">Article: QuantumGrad - Qutrits, because Qubits aren&#39;t weird enough</a></li>
+    <li><span>13 Dec 2023</span> &raquo; <a href="https://ingenium.engr.tamu.edu/navigating-paid-summer-research-opportunities-doe-internships-as-an-aggie/">Article: Navigating Paid Summer Research Opportunities: DOE internships as an Aggie</a></li>
+  </ul>
+
+  <h1>Tools</h1>
+   <ul class="posts">
+     <li><a href="URL_TO_YOUR_NOTEBOOK">Notebook 1</a></li>
+     <li><a href="URL_TO_YOUR_NOTEBOOK">Notebook 2</a></li>
+     <!-- Add more notebooks as needed -->
+   </ul>
+  
+  <h1>My Research</h1>
+  <ul class="posts">
+    <li><span>10 Jul 2024</span> &raquo; <a href="https://arxiv.org/abs/2407.07294">Report: Analyzing Machine Learning Performance in a Hybrid Quantum Computing and HPC Environment</a></li>
+    <li><span>5 Oct 2023</span> &raquo; <a href="https://arxiv.org/abs/2310.03286">Report: Bridging HPC and Quantum Systems using Scientific Workflows</a></li>
+  </ul>
