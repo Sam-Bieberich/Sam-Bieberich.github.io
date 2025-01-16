@@ -21,7 +21,7 @@ async function analyzeCSV() {
     const outputDiv = document.getElementById('output');
 
     if (fileInput1.files.length === 0 || fileInput2.files.length === 0) {
-        outputDiv.innerHTML = 'Please select two CSV files';
+        outputDiv.innerHTML = 'This tool is designed to allow for users to have one standing file with rereads (read count) tracked in addition to adding data from latest goodreads exports. If this is not the case for you, submit the same file in each of the boxes.';
         console.log('No files selected');
         return;
     }
