@@ -1,0 +1,11 @@
+---
+layout: default
+title: Tool 1: CSV Analysis
+---
+
+<h1>Tool 1: CSV Analysis</h1>
+<p>Upload your CSV file below to analyze the Goodreads data.</p>
+<form action="/upload_csv" method="post" enctype="multipart/form-data">
+  <input type="file" name="csv_file" accept=".csv">
+  <input type="submit" value="Upload and Analyze">
+</form>
