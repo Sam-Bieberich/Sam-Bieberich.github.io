@@ -122,17 +122,30 @@ def plot_top_authors_separate_bars(ranked_books, ranked_pages):
     x_books = np.arange(len(authors_books))
     x_pages = np.arange(len(authors_pages))
     width = 0.35
-    fig, ax = plt.subplots(figsize=(12, 8))
-    ax.bar(x_books, book_counts, width, color='#4682B4')
+    fig, ax = plt.subplots(2, 1, figsize=(12, 16), gridspec_kw={'hspace': 0.5})
+    
+    ax[0].bar(x_books, book_counts, width, color='#4682B4')
     for i, value in enumerate(book_counts):
-        ax.text(x_books[i], value + 0.1, f'{value}', ha='center', fontsize=10)
-    ax.set_title("Top 10 Authors by Books Read", fontsize=14, fontweight='bold')
-    ax.set_xlabel("Authors", fontsize=12, fontweight='bold')
-    ax.set_ylabel("Books Read", fontsize=12, fontweight='bold')
-    ax.set_xticks(x_books)
-    ax.set_xticklabels(authors_books, rotation=45, ha="right", fontsize=10)
+        ax[0].text(x_books[i], value + 0.1, f'{value}', ha='center', fontsize=10)
+    ax[0].set_title("Top 10 Authors by Books Read", fontsize=14, fontweight='bold')
+    ax[0].set_xlabel("Authors", fontsize=12, fontweight='bold')
+    ax[0].set_ylabel("Books Read", fontsize=12, fontweight='bold')
+    ax[0].set_xticks(x_books)
+    ax[0].set_xticklabels(authors_books, rotation=45, ha="right", fontsize=10)
     for spine in ['top', 'right']:
-        ax.spines[spine].set_visible(False)
+        ax[0].spines[spine].set_visible(False)
+    
+    ax[1].bar(x_pages, page_counts, width, color='#FF6347')
+    for i, value in enumerate(page_counts):
+        ax[1].text(x_pages[i], value + 0.1, f'{value}', ha='center', fontsize=10)
+    ax[1].set_title("Top 10 Authors by Pages Read", fontsize=14, fontweight='bold')
+    ax[1].set_xlabel("Authors", fontsize=12, fontweight='bold')
+    ax[1].set_ylabel("Pages Read", fontsize=12, fontweight='bold')
+    ax[1].set_xticks(x_pages)
+    ax[1].set_xticklabels(authors_pages, rotation=45, ha="right", fontsize=10)
+    for spine in ['top', 'right']:
+        ax[1].spines[spine].set_visible(False)
+    
     plt.tight_layout()
     canvas = FigureCanvas(fig)
     png_output = BytesIO()
@@ -149,8 +162,8 @@ plot2_base64 = plot_top_authors_separate_bars(ranked_books, ranked_pages)
             console.log('Python code executed');
 
             // Display the output
-            const plot1Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot1_base64')}" alt="Top Authors by Books and Pages Plot">`;
-            const plot2Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot2_base64')}" alt="Top Authors Separate Bars Plot">`;
+            const plot1Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot1_base64')}" alt="Top Authors by Books and Pages Plot" style="margin-bottom: 20px;">`;
+            const plot2Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot2_base64')}" alt="Top Authors Separate Bars Plot" style="margin-top: 20px;">`;
             outputDiv.innerHTML = plot1Img + plot2Img;
         };
         reader2.readAsText(file2);
