@@ -3,50 +3,110 @@ layout: default
 title: Goodreads Plot Generator
 ---
 
-<h1>Tool 1: CSV Analysis of Goodreads Data</h1>
-<p>Upload your CSV files below to analyze the Goodreads data. CSV files should be from Goodreads site in the Import and Export tab. This tool reads the data (in addition to read count manual measurements) and prints some helpful plots so that you can see who your favorite authors are! No data is stored on the cloud, just python performed in HTML.</p>
-<input type="file" id="csvFileInput1" accept=".csv">
-<input type="file" id="csvFileInput2" accept=".csv">
-<button onclick="analyzeCSV()">Upload and Analyze</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goodreads Plot Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .file-inputs {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        input[type="file"] {
+            width: 48%;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tool 1: CSV Analysis of Goodreads Data</h1>
+        <p>Upload your CSV files below to analyze the Goodreads data. CSV files should be from the Goodreads site in the Import and Export tab. This tool reads the data (in addition to read count manually measured by users).</p>
+        <div class="file-inputs">
+            <input type="file" id="csvFileInput1" accept=".csv">
+            <input type="file" id="csvFileInput2" accept=".csv">
+        </div>
+        <button onclick="analyzeCSV()">Upload and Analyze</button>
+        <div id="output"></div>
+    </div>
 
-<div id="output"></div>
+    <!-- Include Pyodide -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
 
-<!-- Include Pyodide -->
-<script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
+    <script>
+    async function analyzeCSV() {
+        const fileInput1 = document.getElementById('csvFileInput1');
+        const fileInput2 = document.getElementById('csvFileInput2');
+        const outputDiv = document.getElementById('output');
 
-<script>
-async function analyzeCSV() {
-    const fileInput1 = document.getElementById('csvFileInput1');
-    const fileInput2 = document.getElementById('csvFileInput2');
-    const outputDiv = document.getElementById('output');
+        if (fileInput1.files.length === 0 || fileInput2.files.length === 0) {
+            outputDiv.innerHTML = 'This tool is designed for combining two Goodreads data files, one with rereads implemented (saved as a backup) and the other with the latest export from the Goodreads site. If you do not work like this, just submit the same file twice (once into each box).';
+            console.log('No files selected');
+            return;
+        }
 
-    if (fileInput1.files.length === 0 || fileInput2.files.length === 0) {
-        outputDiv.innerHTML = 'This tool is designed to allow for users to have one standing file with rereads (read count) tracked in addition to adding data from latest goodreads exports. If this is not the case for you, submit the same file in each of the boxes.';
-        console.log('No files selected');
-        return;
-    }
+        const file1 = fileInput1.files[0];
+        const file2 = fileInput2.files[0];
+        const reader1 = new FileReader();
+        const reader2 = new FileReader();
 
-    const file1 = fileInput1.files[0];
-    const file2 = fileInput2.files[0];
-    const reader1 = new FileReader();
-    const reader2 = new FileReader();
+        reader1.onload = async function(event1) {
+            const csvData1 = event1.target.result;
+            reader2.onload = async function(event2) {
+                const csvData2 = event2.target.result;
 
-    reader1.onload = async function(event1) {
-        const csvData1 = event1.target.result;
-        reader2.onload = async function(event2) {
-            const csvData2 = event2.target.result;
+                console.log('CSV Data 1:', csvData1);
+                console.log('CSV Data 2:', csvData2);
 
-            console.log('CSV Data 1:', csvData1);
-            console.log('CSV Data 2:', csvData2);
+                // Load Pyodide and necessary packages
+                let pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/" });
+                await pyodide.loadPackage(['pandas', 'matplotlib']);
 
-            // Load Pyodide and necessary packages
-            let pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/" });
-            await pyodide.loadPackage(['pandas', 'matplotlib']);
+                console.log('Pyodide loaded');
 
-            console.log('Pyodide loaded');
-
-            // Run the Python code
-            pyodide.runPython(`
+                // Run the Python code
+                pyodide.runPython(`
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import defaultdict
@@ -157,17 +217,19 @@ def plot_top_authors_separate_bars(ranked_books, ranked_pages):
 ranked_books, ranked_pages = rank_authors_by_books_and_pages(combined_df)
 plot1_base64 = plot_top_authors_by_books_and_pages(ranked_books, ranked_pages)
 plot2_base64 = plot_top_authors_separate_bars(ranked_books, ranked_pages)
-            `);
+                `);
 
-            console.log('Python code executed');
+                console.log('Python code executed');
 
-            // Display the output
-            const plot1Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot1_base64')}" alt="Top Authors by Books and Pages Plot" style="margin-bottom: 20px;">`;
-            const plot2Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot2_base64')}" alt="Top Authors Separate Bars Plot" style="margin-top: 20px;">`;
-            outputDiv.innerHTML = plot1Img + plot2Img;
+                // Display the output
+                const plot1Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot1_base64')}" alt="Top Authors by Books and Pages Plot" style="margin-bottom: 20px;">`;
+                const plot2Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot2_base64')}" alt="Top Authors Separate Bars Plot" style="margin-top: 20px;">`;
+                outputDiv.innerHTML = plot1Img + plot2Img;
+            };
+            reader2.readAsText(file2);
         };
-        reader2.readAsText(file2);
-    };
-    reader1.readAsText(file1);
-}
-</script>
+        reader1.readAsText(file1);
+    }
+    </script>
+</body>
+</html>
