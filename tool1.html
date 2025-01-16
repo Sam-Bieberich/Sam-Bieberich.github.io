@@ -56,11 +56,6 @@ title: Goodreads Plot Generator
         }
         #output {
             margin-top: 30px;
-            text-align: center; /* Center the output div */
-        }
-        #output img {
-            display: block;
-            margin: 0 auto;
         }
     </style>
 </head>
@@ -144,9 +139,9 @@ def rank_authors_by_books_and_pages(data):
         author = row['Author']
         pages = row['Number of Pages']
         read_count = row['Read Count']
-        if pages > 0 and read count > 0:
-            author_books[author] += read count
-            author_pages[author] += pages * read count
+        if pages > 0 and read_count > 0:
+            author_books[author] += read_count
+            author_pages[author] += pages * read_count
     ranked_by_books = sorted(author_books.items(), key=lambda x: x[1], reverse=True)
     ranked_by_pages = sorted(author_pages.items(), key=lambda x: x[1], reverse=True)
     return ranked_by_books, ranked_by_pages
