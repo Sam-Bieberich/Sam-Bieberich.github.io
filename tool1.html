@@ -52,6 +52,9 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 import numpy as np
 from io import StringIO
+import base64
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 csv_data1 = '''${csvData1}'''
 csv_data2 = '''${csvData2}'''
@@ -88,20 +91,24 @@ def plot_top_authors_by_books_and_pages(ranked_by_books, ranked_by_pages):
     authors = [author for author, _ in top_ten_books]
     books = [books for _, books in top_ten_books]
     pages = [dict(ranked_by_pages).get(author, 0) for author in authors]
-    plt.figure(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 8))
     plt.style.use('ggplot')
-    plt.scatter(books, pages, color='#FF6347', s=100, alpha=0.8, edgecolor='k', linewidth=0.5)
+    ax.scatter(books, pages, color='#FF6347', s=100, alpha=0.8, edgecolor='k', linewidth=0.5)
     for author, x, y in zip(authors, books, pages):
-        plt.text(x, y, author, fontsize=10, ha='right', va='bottom', color='gray', alpha=0.8)
-    plt.xlabel("Books Read (Including Rereads)", fontsize=14, fontweight='bold')
-    plt.ylabel("Total Pages Read", fontsize=14, fontweight='bold')
-    plt.title("Top 10 Authors by Books Read vs. Pages Read", fontsize=18, fontweight='bold', pad=20)
-    plt.xticks(fontsize=12)
-    plt.yticks(fontsize=12)
-    plt.gca().spines['top'].set_visible(False)
-    plt.gca().spines['right'].set_visible(False)
+        ax.text(x, y, author, fontsize=10, ha='right', va='bottom', color='gray', alpha=0.8)
+    ax.set_xlabel("Books Read (Including Rereads)", fontsize=14, fontweight='bold')
+    ax.set_ylabel("Total Pages Read", fontsize=14, fontweight='bold')
+    ax.set_title("Top 10 Authors by Books Read vs. Pages Read", fontsize=18, fontweight='bold', pad=20)
+    ax.tick_params(axis='both', which='major', labelsize=12)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
     plt.tight_layout()
-    plt.savefig('/tmp/plot1.png')
+    canvas = FigureCanvas(fig)
+    png_output = BytesIO()
+    canvas.print_png(png_output)
+    png_output = png_output.getvalue()
+    png_base64 = base64.b64encode(png_output).decode('ascii')
+    return png_base64
 
 def plot_top_authors_separate_bars(ranked_books, ranked_pages):
     ranked_books_sorted = sorted(ranked_books, key=lambda x: x[1], reverse=True)
@@ -115,46 +122,36 @@ def plot_top_authors_separate_bars(ranked_books, ranked_pages):
     x_books = np.arange(len(authors_books))
     x_pages = np.arange(len(authors_pages))
     width = 0.35
-    plt.figure(figsize=(12, 8))
-    plt.bar(x_books, book_counts, width, color='#4682B4')
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.bar(x_books, book_counts, width, color='#4682B4')
     for i, value in enumerate(book_counts):
-        plt.text(x_books[i], value + 0.1, f'{value}', ha='center', fontsize=10)
-    plt.title("Top 10 Authors by Books Read", fontsize=14, fontweight='bold')
-    plt.xlabel("Authors", fontsize=12, fontweight='bold')
-    plt.ylabel("Books Read", fontsize=12, fontweight='bold')
-    plt.xticks(x_books, authors_books, rotation=45, ha="right", fontsize=10)
+        ax.text(x_books[i], value + 0.1, f'{value}', ha='center', fontsize=10)
+    ax.set_title("Top 10 Authors by Books Read", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Authors", fontsize=12, fontweight='bold')
+    ax.set_ylabel("Books Read", fontsize=12, fontweight='bold')
+    ax.set_xticks(x_books)
+    ax.set_xticklabels(authors_books, rotation=45, ha="right", fontsize=10)
     for spine in ['top', 'right']:
-        plt.gca().spines[spine].set_visible(False)
+        ax.spines[spine].set_visible(False)
     plt.tight_layout()
-    plt.show()
-
-    plt.figure(figsize=(12, 8))
-    plt.bar(x_pages, page_counts, width, color='#FF6347')
-    for i, value in enumerate(page_counts):
-        plt.text(x_pages[i], value + 0.1, f'{value}', ha='center', fontsize=10)
-    plt.title("Top 10 Authors by Pages Read", fontsize=14, fontweight='bold')
-    plt.xlabel("Authors", fontsize=12, fontweight='bold')
-    plt.ylabel("Pages Read", fontsize=12, fontweight='bold')
-    plt.xticks(x_pages, authors_pages, rotation=45, ha="right", fontsize=10)
-    for spine in ['top', 'right']:
-        plt.gca().spines[spine].set_visible(False)
-    plt.tight_layout()
-    plt.show()
+    canvas = FigureCanvas(fig)
+    png_output = BytesIO()
+    canvas.print_png(png_output)
+    png_output = png_output.getvalue()
+    png_base64 = base64.b64encode(png_output).decode('ascii')
+    return png_base64
 
 ranked_books, ranked_pages = rank_authors_by_books_and_pages(combined_df)
-plot_top_authors_by_books_and_pages(ranked_books, ranked_pages)
-plot_top_authors_separate_bars(ranked_books, ranked_pages)
+plot1_base64 = plot_top_authors_by_books_and_pages(ranked_books, ranked_pages)
+plot2_base64 = plot_top_authors_separate_bars(ranked_books, ranked_pages)
             `);
 
             console.log('Python code executed');
 
             // Display the output
-            const outputHtml = pyodide.globals.get('output_html');
-            outputDiv.innerHTML = outputHtml;
-
-            // Display the plot
-            const plotUrl = '/tmp/plot1.png';
-            outputDiv.innerHTML += `<img src="${plotUrl}" alt="Top Authors Plot">`;
+            const plot1Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot1_base64')}" alt="Top Authors by Books and Pages Plot">`;
+            const plot2Img = `<img src="data:image/png;base64,${pyodide.globals.get('plot2_base64')}" alt="Top Authors Separate Bars Plot">`;
+            outputDiv.innerHTML = plot1Img + plot2Img;
         };
         reader2.readAsText(file2);
     };
