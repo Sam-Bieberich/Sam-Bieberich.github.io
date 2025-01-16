@@ -5,7 +5,8 @@ title: Tool 1: CSV Analysis
 
 <h1>Tool 1: CSV Analysis</h1>
 <p>Upload your CSV file below to analyze the Goodreads data.</p>
-<input type="file" id="csvFileInput" accept=".csv">
+<input type="file" id="csvFileInput1" accept=".csv">
+<input type="file" id="csvFileInput2" accept=".csv">
 <button onclick="analyzeCSV()">Upload and Analyze</button>
 
 <div id="output"></div>
@@ -15,255 +16,141 @@ title: Tool 1: CSV Analysis
 
 <script>
 async function analyzeCSV() {
-    const fileInput = document.getElementById('csvFileInput');
+    const fileInput1 = document.getElementById('csvFileInput1');
+    const fileInput2 = document.getElementById('csvFileInput2');
     const outputDiv = document.getElementById('output');
 
-    if (fileInput.files.length === 0) {
-        outputDiv.innerHTML = 'No file selected';
+    if (fileInput1.files.length === 0 || fileInput2.files.length === 0) {
+        outputDiv.innerHTML = 'Please select two CSV files';
         return;
     }
 
-    const file = fileInput.files[0];
-    const reader = new FileReader();
+    const file1 = fileInput1.files[0];
+    const file2 = fileInput2.files[0];
+    const reader1 = new FileReader();
+    const reader2 = new FileReader();
 
-    reader.onload = async function(event) {
-        const csvData = event.target.result;
+    reader1.onload = async function(event1) {
+        const csvData1 = event1.target.result;
+        reader2.onload = async function(event2) {
+            const csvData2 = event2.target.result;
 
-        // Load Pyodide and necessary packages
-        let pyodide = await loadPyodide();
-        await pyodide.loadPackage(['pandas', 'matplotlib']);
+            // Load Pyodide and necessary packages
+            let pyodide = await loadPyodide();
+            await pyodide.loadPackage(['pandas', 'matplotlib']);
 
-        // Run the Python code
-        pyodide.runPython(`
-            import pandas as pd
-            import matplotlib.pyplot as plt
-            from collections import defaultdict
-            import numpy as np
+            // Run the Python code
+            pyodide.runPython(`
+import pandas as pd
+import matplotlib.pyplot as plt
+from collections import defaultdict
+import numpy as np
+from io import StringIO
 
-            def combine_goodreads_files(file1, file2, output_file):
-                """
-                Combines two Goodreads CSV files into a single dataset, prioritizing rows with higher Read Count for duplicates.
-                
-                Args:
-                    file1 (str): Path to the first Goodreads CSV file.
-                    file2 (str): Path to the second Goodreads CSV file.
-                    output_file (str): Path where the combined file will be saved.
-                """
-                # Load the files into DataFrames
-                df1 = pd.read_csv(file1)
-                df2 = pd.read_csv(file2)
-            
-                # Combine the two datasets
-                combined_df = pd.concat([df1, df2], ignore_index=True)
-            
-                # Ensure `Read Count` is numeric for comparison
-                combined_df['Read Count'] = pd.to_numeric(combined_df['Read Count'], errors='coerce').fillna(0).astype(int)
-            
-                # Remove duplicates, keeping the one with the highest 'Read Count'
-                combined_df = combined_df.sort_values('Read Count', ascending=False)  # Sort so the highest count appears first
-                combined_df = combined_df.drop_duplicates(subset=['Book Id'], keep='first')  # Deduplicate based on 'Book Id'
-            
-                # Save the result to a new CSV file
-                combined_df.to_csv(output_file, index=False, encoding='utf-8')
-            
-                print(f"Combined file saved to: {output_file}")
-            
-            import matplotlib.pyplot as plt
-            from collections import defaultdict
-            
-            def rank_authors_by_books_and_pages(csv_file):
-                """
-                Ranks authors based on the total number of books read and pages read, 
-                accounting for rereads using the Read Count column.
-            
-                Args:
-                    csv_file (str): Path to the Goodreads CSV file.
-            
-                Returns:
-                    tuple: Ranked lists of authors by books read and pages read.
-                """
-                # Dictionaries to store aggregated data
-                author_books = defaultdict(int)
-                author_pages = defaultdict(int)
-            
-                # Load the CSV file into a DataFrame
-                data = pd.read_csv(csv_file)
-            
-                # Ensure necessary columns are present and handle missing data
-                required_columns = ['Author', 'Number of Pages', 'Read Count']
-                for col in required_columns:
-                    if col not in data.columns:
-                        raise ValueError(f"CSV file is missing required column: {col}")
-            
-                # Fill NaNs and convert to numeric types
-                data['Number of Pages'] = pd.to_numeric(data['Number of Pages'], errors='coerce').fillna(0).astype(int)
-                data['Read Count'] = pd.to_numeric(data['Read Count'], errors='coerce').fillna(1).astype(int)  # Default reread count to 1 if blank
-            
-                # Aggregate books read and pages read per author
-                for _, row in data.iterrows():
-                    author = row['Author']
-                    pages = row['Number of Pages']
-                    read_count = row['Read Count']
-            
-                    if pages > 0 and read_count > 0:
-                        author_books[author] += read_count  # Count the number of books (including rereads)
-                        author_pages[author] += pages * read_count  # Count total pages (pages * rereads)
-            
-                # Create ranked lists
-                ranked_by_books = sorted(author_books.items(), key=lambda x: x[1], reverse=True)
-                ranked_by_pages = sorted(author_pages.items(), key=lambda x: x[1], reverse=True)
-            
-                return ranked_by_books, ranked_by_pages
-            
-            
-            def plot_top_authors_by_books_and_pages(ranked_by_books, ranked_by_pages):
-                """
-                Plots the top 10 authors by books read vs. total pages read.
-            
-                Args:
-                    ranked_by_books (list): List of authors ranked by total books read.
-                    ranked_by_pages (list): List of authors ranked by total pages read.
-                """
-                # Get the top 10 authors by books read
-                top_ten_books = ranked_by_books[:10]
-                
-                # Prepare data for plotting
-                authors = [author for author, _ in top_ten_books]
-                books = [books for _, books in top_ten_books]
-                pages = [dict(ranked_by_pages).get(author, 0) for author in authors]
-            
-                # Plot
-                plt.figure(figsize=(12, 8))
-                plt.style.use('ggplot')  # Clean background with grid lines
-                
-                # Create scatter plot
-                plt.scatter(books, pages, color='#FF6347', s=100, alpha=0.8, edgecolor='k', linewidth=0.5)
-            
-                # Add annotations for authors
-                for author, x, y in zip(authors, books, pages):
-                    plt.text(x, y, author, fontsize=10, ha='right', va='bottom', color='gray', alpha=0.8)
-            
-                # Label axes and title
-                plt.xlabel("Books Read (Including Rereads)", fontsize=14, fontweight='bold')
-                plt.ylabel("Total Pages Read", fontsize=14, fontweight='bold')
-                plt.title("Top 10 Authors by Books Read vs. Pages Read", fontsize=18, fontweight='bold', pad=20)
-            
-                # Customize ticks and layout
-                plt.xticks(fontsize=12)
-                plt.yticks(fontsize=12)
-                plt.gca().spines['top'].set_visible(False)
-                plt.gca().spines['right'].set_visible(False)
-            
-                plt.tight_layout()
-                plt.show()
-            
-            def plot_top_authors_separate_bars(ranked_books, ranked_pages):
-                """
-                Plots two separate bar charts for the top 10 authors:
-                - One chart for books read.
-                - One chart for pages read.
-                
-                Each chart is sorted in descending order based on the respective metric.
-                
-                Parameters:
-                - ranked_books (list of tuples): List of (author, book_count).
-                - ranked_pages (list of tuples): List of (author, page_count).
-                """
-                
-                # Sort by books and pages separately
-                ranked_books_sorted = sorted(ranked_books, key=lambda x: x[1], reverse=True)
-                ranked_pages_sorted = sorted(ranked_pages, key=lambda x: x[1], reverse=True)
-            
-                # Get top 10 authors by books and pages
-                top_books = ranked_books_sorted[:10]
-                top_pages = ranked_pages_sorted[:10]
-                
-                authors_books = [author for author, _ in top_books]
-                book_counts = [books for _, books in top_books]
-                
-                authors_pages = [author for author, _ in top_pages]
-                page_counts = [pages for _, pages in top_pages]
-            
-                # Set up positions for bars
-                x_books = np.arange(len(authors_books))  # X-axis positions for the authors
-                x_pages = np.arange(len(authors_pages))  # X-axis positions for the authors
-                width = 0.35  # Width of the bars
-            
-                # Create the first figure for books read
-                plt.figure(figsize=(12, 8))
-                plt.bar(x_books, book_counts, width, color='#4682B4')
-                
-                # Add labels to the bars
-                for i, value in enumerate(book_counts):
-                    plt.text(x_books[i], value + 0.1, f'{value}', ha='center', fontsize=10)
-            
-                # Customize plot for books read
-                plt.title("Top 10 Authors by Books Read", fontsize=14, fontweight='bold')
-                plt.xlabel("Authors", fontsize=12, fontweight='bold')
-                plt.ylabel("Books Read", fontsize=12, fontweight='bold')
-                plt.xticks(x_books, authors_books, rotation=45, ha="right", fontsize=10)
-                
-                # Remove spines
-                for spine in ['top', 'right']:
-                    plt.gca().spines[spine].set_visible(False)
-            
-                # Layout adjustment for books read
-                plt.tight_layout()
-                plt.show()
-            
-                # Create the second figure for pages read
-                plt.figure(figsize=(12, 8))
-                plt.bar(x_pages, page_counts, width, color='#FF6347')
-                
-                # Add labels to the bars
-                for i, value in enumerate(page_counts):
-                    plt.text(x_pages[i], value + 0.1, f'{value}', ha='center', fontsize=10)
-            
-                # Customize plot for pages read
-                plt.title("Top 10 Authors by Pages Read", fontsize=14, fontweight='bold')
-                plt.xlabel("Authors", fontsize=12, fontweight='bold')
-                plt.ylabel("Pages Read", fontsize=12, fontweight='bold')
-                plt.xticks(x_pages, authors_pages, rotation=45, ha="right", fontsize=10)
-                
-                # Remove spines
-                for spine in ['top', 'right']:
-                    plt.gca().spines[spine].set_visible(False)
-            
-                # Layout adjustment for pages read
-                plt.tight_layout()
-                plt.show()
+csv_data1 = """${csvData1}"""
+csv_data2 = """${csvData2}"""
+df1 = pd.read_csv(StringIO(csv_data1))
+df2 = pd.read_csv(StringIO(csv_data2))
 
-                output_file = 'C:\\Users\\Owner\\Desktop\\combined_goodreads_data.csv'
+def combine_goodreads_files(df1, df2):
+    combined_df = pd.concat([df1, df2], ignore_index=True)
+    combined_df['Read Count'] = pd.to_numeric(combined_df['Read Count'], errors='coerce').fillna(0).astype(int)
+    combined_df = combined_df.sort_values('Read Count', ascending=False)
+    combined_df = combined_df.drop_duplicates(subset=['Book Id'], keep='first')
+    return combined_df
 
-                # Rank authors by books read and pages read
-            ranked_books, ranked_pages = rank_authors_by_books_and_pages(output_file)
-            
-            # Print top 10 authors by books read
-            print("Top 10 Authors by Books Read:")
-            for i, (author, books) in enumerate(ranked_books[:10], 1):
-                print(f"{i}. {author}: {books} books")
-            
-            # Print top 10 authors by pages read
-            print("\nTop 10 Authors by Pages Read:")
-            for i, (author, pages) in enumerate(ranked_pages[:10], 1):
-                print(f"{i}. {author}: {pages:,} pages")
+combined_df = combine_goodreads_files(df1, df2)
+output_html = combined_df.head().to_html()
 
-            # Plot the data into 2D map
-            plot_top_authors_by_books_and_pages(ranked_books, ranked_pages)
+def rank_authors_by_books_and_pages(data):
+    author_books = defaultdict(int)
+    author_pages = defaultdict(int)
+    data['Number of Pages'] = pd.to_numeric(data['Number of Pages'], errors='coerce').fillna(0).astype(int)
+    data['Read Count'] = pd.to_numeric(data['Read Count'], errors='coerce').fillna(1).astype(int)
+    for _, row in data.iterrows():
+        author = row['Author']
+        pages = row['Number of Pages']
+        read_count = row['Read Count']
+        if pages > 0 and read_count > 0:
+            author_books[author] += read_count
+            author_pages[author] += pages * read_count
+    ranked_by_books = sorted(author_books.items(), key=lambda x: x[1], reverse=True)
+    ranked_by_pages = sorted(author_pages.items(), key=lambda x: x[1], reverse=True)
+    return ranked_by_books, ranked_by_pages
 
-            # Plot the comparison in bar charts
-            plot_top_authors_separate_bars(ranked_books, ranked_pages)
-        `);
+def plot_top_authors_by_books_and_pages(ranked_by_books, ranked_by_pages):
+    top_ten_books = ranked_by_books[:10]
+    authors = [author for author, _ in top_ten_books]
+    books = [books for _, books in top_ten_books]
+    pages = [dict(ranked_by_pages).get(author, 0) for author in authors]
+    plt.figure(figsize=(12, 8))
+    plt.style.use('ggplot')
+    plt.scatter(books, pages, color='#FF6347', s=100, alpha=0.8, edgecolor='k', linewidth=0.5)
+    for author, x, y in zip(authors, books, pages):
+        plt.text(x, y, author, fontsize=10, ha='right', va='bottom', color='gray', alpha=0.8)
+    plt.xlabel("Books Read (Including Rereads)", fontsize=14, fontweight='bold')
+    plt.ylabel("Total Pages Read", fontsize=14, fontweight='bold')
+    plt.title("Top 10 Authors by Books Read vs. Pages Read", fontsize=18, fontweight='bold', pad=20)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.gca().spines['top'].set_visible(False)
+    plt.gca().spines['right'].set_visible(False)
+    plt.tight_layout()
+    plt.savefig('/tmp/plot1.png')
 
-        // Display the output
-        const outputHtml = pyodide.globals.get('output_html');
-        outputDiv.innerHTML = outputHtml;
+def plot_top_authors_separate_bars(ranked_books, ranked_pages):
+    ranked_books_sorted = sorted(ranked_books, key=lambda x: x[1], reverse=True)
+    ranked_pages_sorted = sorted(ranked_pages, key=lambda x: x[1], reverse=True)
+    top_books = ranked_books_sorted[:10]
+    top_pages = ranked_pages_sorted[:10]
+    authors_books = [author for author, _ in top_books]
+    book_counts = [books for _, books in top_books]
+    authors_pages = [author for author, _ in top_pages]
+    page_counts = [pages for _, pages in top_pages]
+    x_books = np.arange(len(authors_books))
+    x_pages = np.arange(len(authors_pages))
+    width = 0.35
+    plt.figure(figsize=(12, 8))
+    plt.bar(x_books, book_counts, width, color='#4682B4')
+    for i, value in enumerate(book_counts):
+        plt.text(x_books[i], value + 0.1, f'{value}', ha='center', fontsize=10)
+    plt.title("Top 10 Authors by Books Read", fontsize=14, fontweight='bold')
+    plt.xlabel("Authors", fontsize=12, fontweight='bold')
+    plt.ylabel("Books Read", fontsize=12, fontweight='bold')
+    plt.xticks(x_books, authors_books, rotation=45, ha="right", fontsize=10)
+    for spine in ['top', 'right']:
+        plt.gca().spines[spine].set_visible(False)
+    plt.tight_layout()
+    plt.show()
 
-        // Display the plot
-        const plotUrl = '/tmp/plot.png';
-        outputDiv.innerHTML += `<img src="${plotUrl}" alt="Top Authors Plot">`;
+    plt.figure(figsize=(12, 8))
+    plt.bar(x_pages, page_counts, width, color='#FF6347')
+    for i, value in enumerate(page_counts):
+        plt.text(x_pages[i], value + 0.1, f'{value}', ha='center', fontsize=10)
+    plt.title("Top 10 Authors by Pages Read", fontsize=14, fontweight='bold')
+    plt.xlabel("Authors", fontsize=12, fontweight='bold')
+    plt.ylabel("Pages Read", fontsize=12, fontweight='bold')
+    plt.xticks(x_pages, authors_pages, rotation=45, ha="right", fontsize=10)
+    for spine in ['top', 'right']:
+        plt.gca().spines[spine].set_visible(False)
+    plt.tight_layout()
+    plt.show()
+
+ranked_books, ranked_pages = rank_authors_by_books_and_pages(combined_df)
+plot_top_authors_by_books_and_pages(ranked_books, ranked_pages)
+plot_top_authors_separate_bars(ranked_books, ranked_pages)
+            `);
+
+            // Display the output
+            const outputHtml = pyodide.globals.get('output_html');
+            outputDiv.innerHTML = outputHtml;
+
+            // Display the plot
+            const plotUrl = '/tmp/plot1.png';
+            outputDiv.innerHTML += `<img src="${plotUrl}" alt="Top Authors Plot">`;
+        };
+        reader2.readAsText(file2);
     };
-
-    reader.readAsText(file);
+    reader1.readAsText(file1);
 }
 </script>
