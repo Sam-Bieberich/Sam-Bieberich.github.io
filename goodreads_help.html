@@ -9,21 +9,34 @@ title: Goodreads Plot Generator Help Page
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goodreads Tool Help</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Assuming you have a common stylesheet -->
 </head>
 <body>
-    <h1>Goodreads Tool Help</h1>
-    <p>Welcome to the Goodreads Tool Help page. Here you will find instructions on how to use the Goodreads Tool.</p>
-    
-    <h2>How to Use the Tool</h2>
-    <ol>
-        <li>Open the Goodreads Tool page.</li>
-        <li>Enter your Goodreads API key in the provided field.</li>
-        <li>Enter the Goodreads user ID for which you want to fetch data.</li>
-        <li>Select the type of data you want to retrieve (e.g., books, reviews).</li>
-        <li>Click the "Fetch Data" button to retrieve the information.</li>
-        <li>Review the fetched data displayed on the page.</li>
-    </ol>
-    
-    <a href="goodreads_tool.html">Back to Goodreads Tool</a>
+    <header>
+        <h1>Goodreads Tool Help</h1>
+    </header>
+    <main>
+        <section>
+            <p>Welcome to the Goodreads Tool Help page. Here you will find instructions on how to use the Goodreads Tool.</p>
+        </section>
+        <section>
+            <h2>How to Use the Tool</h2>
+            <p>To find your Goodreads data:</p>
+            <ul>
+                <li>Go to the Goodreads site.</li>
+                <li>Go to the "My Books" tab.</li>
+                <li>Click on the "Import and export" tool on the sidebar.</li>
+                <li>Export your data.</li>
+            </ul>
+            <p>After exporting data, it can be read using a program like Microsoft Excel or Google Sheets. If you scroll to the far right, there is a column titled "read count." Changing this manually is often the easiest way to take into account rereads for statistic analysis, which this tool does. Once you do that, it is not changed on the Goodreads site, so it is only saved locally on that CSV (make sure you saved it as CSV and not the Excel default).</p>
+            <p>If you are done, since it is not saved, keep this file as a backup and then whenever you export a new Goodreads file, you can put both into the tool on the other page of this site and have the updated stats. Books which overlap are accounted for and not double counted from each file (top read count is saved). If you don't want to modify the read count, just put your export file in each of the two boxes. Ensure that it is in the CSV format (Excel and Sheets can save as CSV) for the data to be printed. Thank you!</p>
+        </section>
+        <nav>
+            <a href="goodreads_tool.html">Back to Goodreads Tool</a>
+        </nav>
+    </main>
+    <footer>
+        <p>&copy; 2023 Your Website Name</p>
+    </footer>
 </body>
 </html>
