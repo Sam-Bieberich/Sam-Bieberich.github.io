@@ -29,22 +29,44 @@ async function analyzeCSV() {
     reader.onload = async function(event) {
         const csvData = event.target.result;
 
-        // Load Pyodide and pandas
+        // Load Pyodide and necessary packages
         let pyodide = await loadPyodide();
-        await pyodide.loadPackage('pandas');
-        await pyodide.runPythonAsync(`
+        await pyodide.loadPackage(['pandas', 'matplotlib']);
+
+        // Run the Python code
+        pyodide.runPython(`
             import pandas as pd
+            import matplotlib.pyplot as plt
             from io import StringIO
 
             csv_data = """${csvData}"""
             df = pd.read_csv(StringIO(csv_data))
 
-            # Perform analysis (example: show first 5 rows)
-            output = df.head().to_html()
+            # Perform analysis
+            output_html = df.head().to_html()
+
+            def plot_top_authors(df):
+                df['Read Count'] = pd.to_numeric(df['Read Count'], errors='coerce').fillna(1).astype(int)
+                df['Number of Pages'] = pd.to_numeric(df['Number of Pages'], errors='coerce').fillna(0).astype(int)
+                author_books = df.groupby('Author')['Read Count'].sum().sort_values(ascending=False).head(10)
+                author_pages = df.groupby('Author')['Number of Pages'].sum().sort_values(ascending=False).head(10)
+
+                fig, ax = plt.subplots(1, 2, figsize=(16, 6))
+                author_books.plot(kind='bar', ax=ax[0], title='Top 10 Authors by Books Read')
+                author_pages.plot(kind='bar', ax=ax[1], title='Top 10 Authors by Pages Read')
+                plt.tight_layout()
+                plt.savefig('/tmp/plot.png')
+
+            plot_top_authors(df)
         `);
 
-        const output = pyodide.globals.get('output');
-        outputDiv.innerHTML = output;
+        // Display the output
+        const outputHtml = pyodide.globals.get('output_html');
+        outputDiv.innerHTML = outputHtml;
+
+        // Display the plot
+        const plotUrl = '/tmp/plot.png';
+        outputDiv.innerHTML += `<img src="${plotUrl}" alt="Top Authors Plot">`;
     };
 
     reader.readAsText(file);
