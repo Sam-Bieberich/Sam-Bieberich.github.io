@@ -22,6 +22,7 @@ async function analyzeCSV() {
 
     if (fileInput1.files.length === 0 || fileInput2.files.length === 0) {
         outputDiv.innerHTML = 'Please select two CSV files';
+        console.log('No files selected');
         return;
     }
 
@@ -35,9 +36,14 @@ async function analyzeCSV() {
         reader2.onload = async function(event2) {
             const csvData2 = event2.target.result;
 
+            console.log('CSV Data 1:', csvData1);
+            console.log('CSV Data 2:', csvData2);
+
             // Load Pyodide and necessary packages
-            let pyodide = await loadPyodide();
+            let pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/" });
             await pyodide.loadPackage(['pandas', 'matplotlib']);
+
+            console.log('Pyodide loaded');
 
             // Run the Python code
             pyodide.runPython(`
@@ -61,6 +67,7 @@ def combine_goodreads_files(df1, df2):
 
 combined_df = combine_goodreads_files(df1, df2)
 output_html = combined_df.head().to_html()
+print(output_html)
 
 def rank_authors_by_books_and_pages(data):
     author_books = defaultdict(int)
@@ -140,6 +147,8 @@ ranked_books, ranked_pages = rank_authors_by_books_and_pages(combined_df)
 plot_top_authors_by_books_and_pages(ranked_books, ranked_pages)
 plot_top_authors_separate_bars(ranked_books, ranked_pages)
             `);
+
+            console.log('Python code executed');
 
             // Display the output
             const outputHtml = pyodide.globals.get('output_html');
