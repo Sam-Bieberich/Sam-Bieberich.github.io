@@ -53,8 +53,8 @@ from collections import defaultdict
 import numpy as np
 from io import StringIO
 
-csv_data1 = """${csvData1}"""
-csv_data2 = """${csvData2}"""
+csv_data1 = '''${csvData1}'''
+csv_data2 = '''${csvData2}'''
 df1 = pd.read_csv(StringIO(csv_data1))
 df2 = pd.read_csv(StringIO(csv_data2))
 
@@ -67,7 +67,6 @@ def combine_goodreads_files(df1, df2):
 
 combined_df = combine_goodreads_files(df1, df2)
 output_html = combined_df.head().to_html()
-print(output_html)
 
 def rank_authors_by_books_and_pages(data):
     author_books = defaultdict(int)
