@@ -9,7 +9,6 @@ http://github.com/mojombo/jekyll
 
 ## Todo List
 - [ ] Post Discord data tool
-- [ ] Goodreads tool help page
 - [ ] Donald Knuth Bounty blog post
 - [ ] Richard Feynman and the history of computing post
 - [ ] Five stages of computing posts
