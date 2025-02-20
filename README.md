@@ -9,8 +9,7 @@ http://github.com/mojombo/jekyll
 
 ## Todo List
 - [ ] Post Discord data tool
-- [ ] Richard Feynman and the history of computing post
-- [ ] Five stages of computing posts
+- [ ] Five stages of computing posts (x2)
 - [ ] TOP500 intro blog
 - [ ] Unconventional computing blog post
 - [ ] AI datacenters and HPC intersection blog post
