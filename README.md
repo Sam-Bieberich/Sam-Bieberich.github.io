@@ -13,3 +13,4 @@ http://github.com/mojombo/jekyll
 - [ ] TOP500 intro blog
 - [ ] Unconventional computing blog post
 - [ ] AI datacenters and HPC intersection blog post
+- [ ] Make a Recommended Reading List/Reading Reviews
