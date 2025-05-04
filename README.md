@@ -9,7 +9,6 @@ http://github.com/mojombo/jekyll
 
 ## Todo List
 - [ ] Post Discord data tool
-- [ ] Five stages of computing posts (x2)
 - [ ] TOP500 intro blog
 - [ ] Unconventional computing blog post
 - [ ] AI datacenters and HPC intersection blog post
