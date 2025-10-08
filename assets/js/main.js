@@ -12,9 +12,10 @@
 
   // Projects: expect li with a .item-meta containing a period like "Aug–Sep 2025" or "2024" or "Aug 2023".
   function sortProjects() {
-    const list = document.getElementById('projects');
-    if (!list) return;
-    const items = Array.from(list.querySelectorAll('li'));
+    ['research','projects'].forEach(id => {
+      const list = document.getElementById(id);
+      if (!list) return;
+      const items = Array.from(list.querySelectorAll('li'));
     const monthMap = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12 };
     function periodEndValue(text) {
       if (!text) return 0;
@@ -39,12 +40,13 @@
       const m = monthMap[lastMonthToken] || 12;
       return new Date(singleYear, m, 0).getTime();
     }
-    items.sort((a,b) => {
-      const av = periodEndValue(a.querySelector('.item-meta')?.textContent || '');
-      const bv = periodEndValue(b.querySelector('.item-meta')?.textContent || '');
-      return bv - av; // descending
+      items.sort((a,b) => {
+        const av = periodEndValue(a.querySelector('.item-meta')?.textContent || '');
+        const bv = periodEndValue(b.querySelector('.item-meta')?.textContent || '');
+        return bv - av; // descending
+      });
+      items.forEach(li => list.appendChild(li));
     });
-    items.forEach(li => list.appendChild(li));
   }
 
   // Writing table: sort by date column descending (YYYY-MM or YYYY)
