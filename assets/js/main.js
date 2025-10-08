@@ -20,6 +20,11 @@
     function periodEndValue(text) {
       if (!text) return 0;
       const cleaned = text.trim().toLowerCase().replace(/\s+–\s+/g,'–').replace(/\s+-\s+/g,'-');
+        const now = new Date();
+        if (/(present|ongoing|current)$/.test(cleaned)) {
+          // Use end of current month for stable ordering
+          return new Date(now.getFullYear(), now.getMonth()+1, 0).getTime();
+        }
       // If pure year
       if (/^\d{4}$/.test(cleaned)) return new Date(parseInt(cleaned,10),11,31).getTime();
       const yearMatches = cleaned.match(/(19|20)\d{2}/g) || [];
