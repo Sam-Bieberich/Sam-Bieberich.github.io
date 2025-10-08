@@ -53,12 +53,27 @@
     if (!table || table.tagName !== 'TABLE') return;
     const rows = Array.from(table.querySelectorAll('tbody tr'));
     rows.sort((a,b) => {
-      const ad = parseDate(a.querySelector('.date')?.textContent.trim());
-      const bd = parseDate(b.querySelector('.date')?.textContent.trim());
+      const ad = parseDate((a.querySelector('.date')?.getAttribute('data-date') || a.querySelector('.date')?.textContent || '').trim());
+      const bd = parseDate((b.querySelector('.date')?.getAttribute('data-date') || b.querySelector('.date')?.textContent || '').trim());
       return bd - ad; // newest first
     });
     const tbody = table.querySelector('tbody');
     rows.forEach(r => tbody.appendChild(r));
+    // Format date cells to Mon YYYY
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    rows.forEach(r => {
+      const cell = r.querySelector('.date');
+      if (!cell) return;
+      const raw = (cell.getAttribute('data-date') || cell.textContent).trim();
+      if (!cell.dataset.original) cell.dataset.original = raw; // preserve
+      let y, m;
+      const parts = raw.split('-');
+      if (parts.length === 1 && /^\d{4}$/.test(parts[0])) { y = parseInt(parts[0],10); m = null; }
+      else if (parts.length >= 2) { y = parseInt(parts[0],10); m = parseInt(parts[1],10); }
+      if (!y || y < 1900) return;
+      const label = m ? monthNames[(m-1) % 12] + ' ' + y : y.toString();
+      cell.textContent = label;
+    });
   }
 
   sortProjects();

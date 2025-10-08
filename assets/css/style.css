@@ -30,6 +30,14 @@ table.writing td.date { white-space:nowrap; font-variant-numeric: tabular-nums; 
 table.writing td.title a { text-decoration:none; }
 table.writing td.title a:hover { text-decoration:underline; }
 table.writing caption { text-align:left; font-size:.7rem; margin:.75rem 0 0; color:#666; }
+/* Refinements */
+table.writing tbody tr:nth-child(odd) { background:#fafafa; }
+table.writing tbody tr:hover { background:#f0f6ff; }
+@media (prefers-color-scheme: dark) { table.writing tbody tr:nth-child(odd) { background:#161616; } table.writing tbody tr:hover { background:#1f2630; } }
+table.writing td.type { background:#eef2f7; border-radius:4px; font-weight:700; } 
+@media (prefers-color-scheme: dark) { table.writing td.type { background:#1f2630; } }
+table.writing td.title { max-width:440px; }
+table.writing td.title a { word-break:break-word; }
 @media (prefers-color-scheme: dark) {
 	table.writing thead th { color:#888; }
 	table.writing tbody tr { border-color:#222; }
