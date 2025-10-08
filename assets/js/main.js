@@ -18,18 +18,26 @@
     const monthMap = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12 };
     function periodEndValue(text) {
       if (!text) return 0;
-      const cleaned = text.trim().toLowerCase();
+      const cleaned = text.trim().toLowerCase().replace(/\s+–\s+/g,'–').replace(/\s+-\s+/g,'-');
       // If pure year
       if (/^\d{4}$/.test(cleaned)) return new Date(parseInt(cleaned,10),11,31).getTime();
-      // Pattern examples: "aug–sep 2025", "aug 2025", "aug-sept 2025"
-      const yearMatch = cleaned.match(/(19|20)\d{2}/);
-      const year = yearMatch ? parseInt(yearMatch[0],10) : 1970;
-      // Grab last month token before year
+      const yearMatches = cleaned.match(/(19|20)\d{2}/g) || [];
       const months = Object.keys(monthMap).join('|');
-      const monthTokens = cleaned.match(new RegExp(`(${months})`, 'g')) || ['dec'];
-      const lastMonthToken = monthTokens[monthTokens.length-1];
-      const month = monthMap[lastMonthToken] || 12;
-      return new Date(year, month, 0).getTime(); // last day of that month
+      const monthTokens = cleaned.match(new RegExp(`(${months})`, 'g')) || [];
+
+      // Cross-year range e.g. "aug 2024 – apr 2025"
+      if (yearMatches.length === 2) {
+        const endYear = parseInt(yearMatches[1],10);
+        // Use last month token AFTER second year appears; if not, use last overall.
+        const lastMonthToken = monthTokens[monthTokens.length-1] || 'dec';
+        const m = monthMap[lastMonthToken] || 12;
+        return new Date(endYear, m, 0).getTime();
+      }
+      // Single-year with possibly multiple months: "aug–sep 2025" or "aug 2025"
+      const singleYear = yearMatches[0] ? parseInt(yearMatches[0],10) : 1970;
+      const lastMonthToken = monthTokens[monthTokens.length-1] || 'dec';
+      const m = monthMap[lastMonthToken] || 12;
+      return new Date(singleYear, m, 0).getTime();
     }
     items.sort((a,b) => {
       const av = periodEndValue(a.querySelector('.item-meta')?.textContent || '');
