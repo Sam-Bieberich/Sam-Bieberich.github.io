@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sam Bieberich</title>
+  <meta name="description" content="Projects and writing by Sam Bieberich." />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <main class="wrapper single">
+    <header>
+      <h1>Sam Bieberich</h1>
+      <p class="tagline"><a href="https://www.linkedin.com/in/samuel-bieberich/" target="_blank" rel="noopener">LinkedIn</a> • <a href="https://github.com/Sam-Bieberich" target="_blank" rel="noopener">GitHub</a></p>
+    </header>
+    <section id="projects-section">
+      <h2>Projects</h2>
+      <ul class="items" id="projects">
+        <li><span class="item-label"><a href="#" target="_blank" rel="noopener">Example Project One</a></span><span class="item-meta">Aug–Sep 2025</span></li>
+        <li><span class="item-label"><a href="#" target="_blank" rel="noopener">Example Project Two</a></span><span class="item-meta">2024</span></li>
+        <li><span class="item-label"><a href="#" target="_blank" rel="noopener">Example Project Three</a></span><span class="item-meta">2023</span></li>
+      </ul>
+    </section>
+    <section id="writing-section" style="margin-top:2.5rem;">
+      <h2>Writing</h2>
+      <table class="writing" id="writing">
+        <thead>
+          <tr><th scope="col">Type</th><th scope="col">Title</th><th scope="col">Date</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="type">[A]</td><td class="title"><a href="#" target="_blank" rel="noopener">ArXiv Paper Placeholder</a></td><td class="date">2025-09</td></tr>
+          <tr><td class="type">[M]</td><td class="title"><a href="#" target="_blank" rel="noopener">Medium Article Placeholder</a></td><td class="date">2025-06</td></tr>
+          <tr><td class="type">[U]</td><td class="title"><a href="#" target="_blank" rel="noopener">Undergraduate Thesis Placeholder</a></td><td class="date">2024-05</td></tr>
+          <tr><td class="type">[T]</td><td class="title"><a href="#" target="_blank" rel="noopener">Technical Report Placeholder</a></td><td class="date">2023-11</td></tr>
+          <tr><td class="type">[O]</td><td class="title"><a href="#" target="_blank" rel="noopener">Other Writing Placeholder</a></td><td class="date">2023-02</td></tr>
+        </tbody>
+        <caption>Legend: [A]=arXiv • [M]=Medium • [O]=Other • [U]=Undergraduate Thesis • [T]=Technical Report</caption>
+      </table>
+    </section>
+    <footer class="foot">© <span id="year"></span> Sam Bieberich</footer>
+  </main>
+  <script src="assets/js/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
