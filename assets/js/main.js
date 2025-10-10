@@ -1,5 +1,39 @@
 // Auto-sorting logic for projects and writing entries.
 (function() {
+  // Theme initialization and toggle
+  (function initTheme() {
+    try {
+      const stored = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = stored || (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      const btn = document.getElementById('themeToggle');
+      if (btn) {
+        // For icons: sun for light, moon for dark
+        const setBtn = (t) => {
+          if (t === 'dark') {
+            btn.textContent = '🌙';
+            btn.setAttribute('aria-label', 'Switch to light mode');
+            btn.setAttribute('title', 'Switch to light mode');
+          } else {
+            btn.textContent = '🌞';
+            btn.setAttribute('aria-label', 'Switch to dark mode');
+            btn.setAttribute('title', 'Switch to dark mode');
+          }
+        };
+        setBtn(theme);
+        btn.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          const next = current === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', next);
+          localStorage.setItem('theme', next);
+          setBtn(next);
+        });
+      }
+    } catch (e) {
+      // fail silently if localStorage blocked
+    }
+  })();
   // Parse a date string like "2025-09", "2025-09-12" or just "2025".
   function parseDate(str) {
     if (!str) return 0;
