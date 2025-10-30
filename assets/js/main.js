@@ -88,7 +88,7 @@
     });
   }
 
-  // Writing table: sort by date column descending (YYYY-MM or YYYY)
+  // Writing table: sort by date descending, then alphabetically by title within each date
   function sortWriting() {
     const table = document.getElementById('writing');
     if (!table || table.tagName !== 'TABLE') return;
@@ -96,7 +96,14 @@
     rows.sort((a,b) => {
       const ad = parseDate((a.querySelector('.date')?.getAttribute('data-date') || a.querySelector('.date')?.textContent || '').trim());
       const bd = parseDate((b.querySelector('.date')?.getAttribute('data-date') || b.querySelector('.date')?.textContent || '').trim());
-      return bd - ad; // newest first
+      
+      // Primary sort: date (newest first)
+      if (bd !== ad) return bd - ad;
+      
+      // Secondary sort: title alphabetically (A-Z)
+      const aTitle = (a.querySelector('.title')?.textContent || '').trim().toLowerCase();
+      const bTitle = (b.querySelector('.title')?.textContent || '').trim().toLowerCase();
+      return aTitle.localeCompare(bTitle);
     });
     const tbody = table.querySelector('tbody');
     rows.forEach(r => tbody.appendChild(r));
