@@ -2,8 +2,8 @@ name: Update Medium Articles
 
 on:
   schedule:
-    # Run daily at 12:00 UTC (7am CT / 6am CST)
-    - cron: '0 12 * * *'
+    # Run weekly on Sundays at 12:00 UTC (7am CT / 6am CST)
+    - cron: '0 12 * * 0'
   workflow_dispatch:  # Allow manual trigger
 
 permissions:

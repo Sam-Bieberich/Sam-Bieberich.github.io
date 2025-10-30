@@ -5,6 +5,8 @@ Scrape Medium profile for new articles and update index.html automatically.
 import os
 import json
 import re
+import time
+import random
 from datetime import datetime
 from urllib.parse import urlparse
 import requests
@@ -30,8 +32,29 @@ def scrape_medium_profile(username):
     }
     
     print(f"Fetching {rss_url}...")
-    response = requests.get(rss_url, headers=headers, timeout=30)
-    response.raise_for_status()
+    
+    # Retry logic with exponential backoff for rate limiting
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            response = requests.get(rss_url, headers=headers, timeout=30)
+            response.raise_for_status()
+            break  # Success, exit retry loop
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429:  # Rate limited
+                if attempt < max_retries - 1:
+                    wait_time = (2 ** attempt) * 5  # 5s, 10s, 20s
+                    print(f"Rate limited (429). Waiting {wait_time}s before retry {attempt + 2}/{max_retries}...")
+                    time.sleep(wait_time)
+                else:
+                    print(f"ERROR: Rate limited after {max_retries} attempts. Medium may be blocking requests.")
+                    print("The workflow will try again tomorrow. No changes made.")
+                    return []
+            else:
+                raise  # Re-raise other HTTP errors
+        except requests.exceptions.RequestException as e:
+            print(f"ERROR: Failed to fetch RSS feed: {e}")
+            return []
     
     soup = BeautifulSoup(response.text, 'xml')
     articles = []
@@ -191,6 +214,11 @@ def update_index_html(new_articles):
 
 def main():
     """Main entry point"""
+    # Add random delay (0-30s) to avoid all GitHub Actions hitting Medium simultaneously
+    delay = random.randint(0, 30)
+    print(f"Waiting {delay}s to avoid rate limiting...")
+    time.sleep(delay)
+    
     config = load_config()
     username = config.get('medium_username')
     
