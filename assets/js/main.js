@@ -122,6 +122,47 @@
       const label = m ? monthNames[(m-1) % 12] + ' ' + y : y.toString();
       cell.textContent = label;
     });
+    
+    // Count articles by type and display stats
+    updateWritingStats(rows);
+  }
+
+  function updateWritingStats(rows) {
+    const stats = {};
+    const typeLabels = {
+      'A': 'arXiv',
+      'F': 'Feature',
+      'M': 'Medium',
+      'O': 'Other',
+      'T': 'Technical Report',
+      'U': 'Undergraduate Thesis'
+    };
+    
+    rows.forEach(r => {
+      const typeCell = r.querySelector('.type');
+      if (!typeCell) return;
+      const typeMatch = typeCell.textContent.match(/\[([A-Z])\]/);
+      if (typeMatch) {
+        const type = typeMatch[1];
+        stats[type] = (stats[type] || 0) + 1;
+      }
+    });
+    
+    // Build stats HTML
+    const statsDiv = document.getElementById('writing-stats');
+    if (!statsDiv) return;
+    
+    const parts = [];
+    Object.keys(typeLabels).forEach(type => {
+      const count = stats[type] || 0;
+      if (count > 0) {
+        parts.push(`${count} ${typeLabels[type]}`);
+      }
+    });
+    
+    if (parts.length > 0) {
+      statsDiv.textContent = parts.join(' • ');
+    }
   }
 
   sortProjects();
