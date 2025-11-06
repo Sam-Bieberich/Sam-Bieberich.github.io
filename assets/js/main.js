@@ -82,7 +82,12 @@
       items.sort((a,b) => {
         const av = periodEndValue(a.querySelector('.item-meta')?.textContent || '');
         const bv = periodEndValue(b.querySelector('.item-meta')?.textContent || '');
-        return bv - av; // descending
+        // Primary: end date (descending)
+        if (bv !== av) return bv - av;
+        // Secondary: alphabetical by visible label/title
+        const aLabel = (a.querySelector('.item-label')?.textContent || '').trim().toLowerCase();
+        const bLabel = (b.querySelector('.item-label')?.textContent || '').trim().toLowerCase();
+        return aLabel.localeCompare(bLabel);
       });
       items.forEach(li => list.appendChild(li));
     });
