@@ -143,13 +143,31 @@
       'U': 'Undergraduate Thesis'
     };
     
+    // Track counts and most recent date per type
+    const typeData = {};
+    
     rows.forEach(r => {
       const typeCell = r.querySelector('.type');
+      const dateCell = r.querySelector('.date');
       if (!typeCell) return;
       const typeMatch = typeCell.textContent.match(/\[([A-Z])\]/);
       if (typeMatch) {
         const type = typeMatch[1];
-        stats[type] = (stats[type] || 0) + 1;
+        if (!typeData[type]) {
+          typeData[type] = { count: 0, latestDate: null };
+        }
+        typeData[type].count++;
+        
+        // Track most recent date
+        if (dateCell) {
+          const dateAttr = dateCell.getAttribute('data-date');
+          if (dateAttr) {
+            const currentDate = parseDate(dateAttr);
+            if (!typeData[type].latestDate || currentDate > typeData[type].latestDate) {
+              typeData[type].latestDate = currentDate;
+            }
+          }
+        }
       }
     });
     
@@ -157,16 +175,27 @@
     const statsDiv = document.getElementById('writing-stats');
     if (!statsDiv) return;
     
+    // Sort types: first by count (descending), then by most recent date (descending)
+    const sortedTypes = Object.keys(typeData).sort((a, b) => {
+      const countDiff = typeData[b].count - typeData[a].count;
+      if (countDiff !== 0) return countDiff;
+      
+      // If counts are equal, sort by most recent date
+      const aDate = typeData[a].latestDate || 0;
+      const bDate = typeData[b].latestDate || 0;
+      return bDate - aDate;
+    });
+    
     const parts = [];
-    Object.keys(typeLabels).forEach(type => {
-      const count = stats[type] || 0;
-      if (count > 0) {
-        parts.push(`${count} ${typeLabels[type]}`);
-      }
+    let total = 0;
+    sortedTypes.forEach(type => {
+      const count = typeData[type].count;
+      total += count;
+      parts.push(`${count} ${typeLabels[type]}`);
     });
     
     if (parts.length > 0) {
-      statsDiv.textContent = parts.join(' • ');
+      statsDiv.innerHTML = `Cumulative: ${total}<br>${parts.join(' • ')}`;
     }
   }
 
