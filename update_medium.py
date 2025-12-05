@@ -222,7 +222,7 @@ def update_index_html(new_articles):
 def main():
     """Main entry point"""
     # Add random delay (0-30s) to avoid all GitHub Actions hitting Medium simultaneously
-    delay = random.randint(0, 30)
+    delay = random.randint(0, 10)
     print(f"Waiting {delay}s to avoid rate limiting...")
     time.sleep(delay)
     
