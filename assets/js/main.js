@@ -195,7 +195,7 @@
     });
     
     if (parts.length > 0) {
-      statsDiv.innerHTML = `Cumulative: ${total}<br>${parts.join(' • ')}`;
+      statsDiv.innerHTML = `Total: ${total}<br>${parts.join(' • ')}`;
     }
   }
 
