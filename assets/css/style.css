@@ -63,7 +63,7 @@ table.writing thead th { font-size:.65rem; text-transform:uppercase; letter-spac
 table.writing tbody tr { border-top:1px solid var(--border); }
 table.writing tbody tr:first-child { border-top:2px solid var(--text); }
 table.writing td.type { width:2.2rem; font-weight:600; font-size:.7rem; text-align:center; letter-spacing:.05em; color:var(--typeText); }
-table.writing td.date { white-space:nowrap; font-variant-numeric: tabular-nums; color:var(--dateText); }
+table.writing td.date { white-space:nowrap; font-variant-numeric: tabular-nums; color:var(--dateText); text-align:right; }
 table.writing td.title a { text-decoration:none; }
 /* No underlines anywhere (explicitly override hover/focus) */
 table.writing td.title a:hover { text-decoration:none; }
