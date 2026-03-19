@@ -46,7 +46,7 @@
 
   // Projects: expect li with a .item-meta containing a period like "Aug–Sep 2025" or "2024" or "Aug 2023".
   function sortProjects() {
-    ['research','projects'].forEach(id => {
+    ['research', 'ongoing-projects', 'projects'].forEach(id => {
       const list = document.getElementById(id);
       if (!list) return;
       const items = Array.from(list.querySelectorAll('li'));
