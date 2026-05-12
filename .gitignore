@@ -27,3 +27,5 @@ dist/
 
 # Local-only page variants
 cv_timeline.html
+
+exports/
